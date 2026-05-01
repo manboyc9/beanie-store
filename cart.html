@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Cart — Knit&Co.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #FAF7F2;
+      --dark: #1C1814;
+      --warm: #8B5E3C;
+      --accent: #D4A574;
+      --light: #F0E8DC;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--dark); overflow-x: hidden; }
+
+    /* NAV */
+    .nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 2.5rem; border-bottom: 1px solid rgba(139,94,60,0.2); background: var(--cream); position: sticky; top: 0; z-index: 100; }
+    .logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--dark); letter-spacing: -0.5px; text-decoration: none;}
+    .logo span { color: var(--warm); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { font-size: 14px; font-weight: 500; color: var(--dark); text-decoration: none; opacity: 0.7; transition: opacity 0.2s; }
+    .nav-links a:hover { opacity: 1; }
+    .cart-btn { background: var(--dark); color: var(--cream); border: none; padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
+    .cart-btn:hover { background: var(--warm); }
+    .cart-count { background: var(--warm); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; display: inline-flex; align-items: center; justify-content: center; margin-left: 4px; font-weight: 700; }
+
+    /* CART CONTAINER */
+    .cart-container { padding: 4rem 2.5rem; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; align-items: start; min-height: 70vh;}
+    .section-title { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700; color: var(--dark); margin-bottom: 2rem; }
+
+    /* CART ITEMS */
+    .cart-items { display: flex; flex-direction: column; gap: 1.5rem; }
+    .cart-item { display: flex; gap: 1.5rem; background: white; padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(139,94,60,0.1); align-items: center; }
+    .item-img { width: 100px; height: 100px; background: var(--light); border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .item-img img { width: 100%; height: 100%; object-fit: contain; }
+    
+    .item-details { flex: 1; }
+    .item-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 0.25rem; }
+    .item-price { font-size: 14px; color: var(--warm); font-weight: 500; margin-bottom: 0.5rem; }
+    .item-color { display: flex; align-items: center; gap: 0.5rem; font-size: 13px; color: rgba(28,24,20,0.6); }
+    .color-swatch { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 1px solid rgba(28,24,20,0.1); }
+    
+    .item-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 1rem; }
+    .item-total { font-size: 18px; font-weight: 700; }
+    
+    .qty-controls { display: flex; align-items: center; border: 1px solid rgba(28,24,20,0.2); border-radius: 30px; overflow: hidden; height: 36px; }
+    .qty-btn { background: transparent; border: none; width: 30px; height: 100%; cursor: pointer; color: var(--dark); font-size: 16px; transition: background 0.2s; }
+    .qty-btn:hover { background: rgba(28,24,20,0.05); }
+    .qty-val { width: 30px; text-align: center; font-size: 14px; font-weight: 500; }
+    
+    .remove-btn { background: none; border: none; color: #C0392B; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: underline; }
+
+    /* ORDER SUMMARY */
+    .summary-card { background: white; padding: 2rem; border-radius: 20px; border: 1px solid rgba(139,94,60,0.1); box-shadow: 0 10px 30px rgba(139,94,60,0.05); position: sticky; top: 100px; }
+    .summary-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(139,94,60,0.1); padding-bottom: 1rem; }
+    
+    .summary-row { display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 15px; color: rgba(28,24,20,0.8); }
+    .summary-row.total { font-weight: 700; font-size: 18px; color: var(--dark); border-top: 1px solid rgba(139,94,60,0.1); padding-top: 1rem; margin-top: 0.5rem; }
+    
+    .checkout-btn { background: var(--dark); color: var(--cream); border: none; padding: 1rem; border-radius: 30px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; width: 100%; margin-top: 1.5rem; }
+    .checkout-btn:hover { background: var(--warm); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(139,94,60,0.2); }
+    
+    .empty-cart { text-align: center; padding: 4rem 2rem; background: white; border-radius: 20px; border: 1px solid rgba(139,94,60,0.1); }
+    .empty-cart h3 { font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 1rem; }
+    .empty-cart p { color: rgba(28,24,20,0.6); margin-bottom: 2rem; }
+    .shop-btn { background: transparent; color: var(--dark); border: 1.5px solid var(--dark); padding: 0.85rem 2rem; border-radius: 30px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; text-decoration: none; display: inline-block; transition: all 0.2s; }
+    .shop-btn:hover { background: var(--dark); color: var(--cream); }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--dark); color: var(--cream); padding: 1rem 1.5rem; border-radius: 12px; font-size: 14px; font-weight: 500; opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 999; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 900px) {
+      .cart-container { grid-template-columns: 1fr; }
+      .summary-card { position: relative; top: 0; }
+    }
+    @media (max-width: 600px) {
+      .cart-item { flex-direction: column; align-items: flex-start; }
+      .item-actions { align-items: flex-start; width: 100%; flex-direction: row; justify-content: space-between; margin-top: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<nav class="nav">
+  <div style="display: flex; align-items: center;">
+    <a href="index.html" class="logo">Knit<span>&amp;Co.</span></a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Shop</a></li>
+    <li><a href="index.html">Collections</a></li>
+    <li><a href="customer-care.html">Customer Care</a></li>
+    <!-- Dynamic links injected here -->
+  </ul>
+  <button class="cart-btn" onclick="window.location.href='cart.html'">Cart <span class="cart-count" id="cartCount">0</span></button>
+</nav>
+
+<div class="cart-container" id="cartLayout">
+  <!-- Dynamic Cart Content Injected Here -->
+</div>
+
+<script>
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  function getCart() {
+    return JSON.parse(localStorage.getItem('cart')) || [];
+  }
+
+  function saveCart(cart) {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
+
+  function updateCartCountUI(cart) {
+    const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const countEl = document.getElementById('cartCount');
+    if (countEl) countEl.textContent = totalQty;
+  }
+
+  function changeQty(index, change) {
+    let cart = getCart();
+    if (cart[index]) {
+      cart[index].quantity += change;
+      if (cart[index].quantity < 1) {
+        cart[index].quantity = 1;
+      }
+      saveCart(cart);
+      renderCart();
+    }
+  }
+
+  function removeItem(index) {
+    let cart = getCart();
+    cart.splice(index, 1);
+    saveCart(cart);
+    renderCart();
+    showToast('Item removed from cart');
+  }
+
+  function handleCheckout() {
+    saveCart([]); // Clear cart
+    renderCart();
+    showToast('Thank you for your order! Redirecting...');
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 2500);
+  }
+
+  function renderCart() {
+    const cart = getCart();
+    updateCartCountUI(cart);
+    const container = document.getElementById('cartLayout');
+
+    if (cart.length === 0) {
+      container.style.gridTemplateColumns = "1fr";
+      container.innerHTML = `
+        <div class="empty-cart">
+          <h3>Your cart is empty</h3>
+          <p>Looks like you haven't added anything to your cart yet.</p>
+          <a href="index.html" class="shop-btn">Continue Shopping</a>
+        </div>
+      `;
+      return;
+    }
+
+    container.style.gridTemplateColumns = ""; // Restore CSS grid
+
+    let subtotal = 0;
+    let itemsHtml = '<div class="cart-items">';
+    
+    cart.forEach((item, index) => {
+      const itemTotal = item.price * item.quantity;
+      subtotal += itemTotal;
+      
+      itemsHtml += `
+        <div class="cart-item">
+          <div class="item-img">
+            ${item.image ? `<img src="${item.image}" alt="${item.name}" />` : '👕'}
+          </div>
+          <div class="item-details">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">$${item.price}.00</div>
+            <div class="item-color">Color: <span class="color-swatch" style="background-color: ${item.color}"></span></div>
+          </div>
+          <div class="item-actions">
+            <div class="item-total">$${itemTotal}.00</div>
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
+              <div class="qty-val" style="display:flex; align-items:center; justify-content:center;">${item.quantity}</div>
+              <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+            </div>
+            <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+          </div>
+        </div>
+      `;
+    });
+    
+    itemsHtml += '</div>';
+
+    const shipping = subtotal > 50 ? 0 : 5;
+    const total = subtotal + shipping;
+
+    const summaryHtml = `
+      <div>
+        <div class="summary-card">
+          <h3 class="summary-title">Order Summary</h3>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>$${subtotal}.00</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span>${shipping === 0 ? 'Free' : '$' + shipping + '.00'}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>$${total}.00</span>
+          </div>
+          <p style="font-size: 12px; color: rgba(28,24,20,0.5); margin-top: 1rem; text-align: center;">
+            ${shipping === 0 ? 'You qualify for free shipping!' : `Add $${50 - subtotal}.00 more for free shipping.`}
+          </p>
+          <button class="checkout-btn" onclick="handleCheckout()">Proceed to Checkout</button>
+        </div>
+      </div>
+    `;
+
+    container.innerHTML = `
+      <div>
+        <h2 class="section-title">Your Cart</h2>
+        ${itemsHtml}
+      </div>
+      ${summaryHtml}
+    `;
+  }
+
+  function renderNav() {
+    const role = localStorage.getItem('userRole');
+    const navLinks = document.querySelector('.nav-links');
+    
+    const existingDynamic = document.querySelectorAll('.dynamic-link');
+    existingDynamic.forEach(el => el.remove());
+
+    if (role === 'admin') {
+      navLinks.insertAdjacentHTML('beforeend', '<li class="dynamic-link"><a href="admin.html">Admin Dashboard</a></li>');
+      navLinks.insertAdjacentHTML('beforeend', '<li class="dynamic-link"><a href="#" onclick="logout(event)">Logout</a></li>');
+    } else if (role === 'customer') {
+      navLinks.insertAdjacentHTML('beforeend', '<li class="dynamic-link"><a href="#">My Account</a></li>');
+      navLinks.insertAdjacentHTML('beforeend', '<li class="dynamic-link"><a href="#" onclick="logout(event)">Logout</a></li>');
+    } else {
+      navLinks.insertAdjacentHTML('beforeend', '<li class="dynamic-link"><a href="login.html">Login</a></li>');
+    }
+  }
+
+  function logout(e) {
+    if(e) e.preventDefault();
+    localStorage.removeItem('userRole');
+    showToast('Logged out successfully.');
+    renderNav();
+  }
+
+  // Init
+  renderCart();
+  renderNav();
+</script>
+
+</body>
+</html>
